@@ -1,32 +1,45 @@
-import { GLOBAL_CSS } from '../constants';
+import { COUNTRY_FOOD } from '../constants/index.ts';
 import koreanImage from '../assets/category-korean.png';
 import chineseImage from '../assets/category-chinese.png';
 import japaneseImage from '../assets/category-japanese.png';
 import westernImage from '../assets/category-western.png';
 import asianImage from '../assets/category-asian.png';
 import etcImage from '../assets/category-etc.png';
+import { shortenString } from '../utils';
 
 class RestaurantBox extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  getCategoryImage = (category) => {
-    if (category === '한식') return koreanImage;
-    if (category === '중식') return chineseImage;
-    if (category === '일식') return japaneseImage;
-    if (category === '양식') return westernImage;
-    if (category === '아시안') return asianImage;
-    if (category === '기타') return etcImage;
+  #categoryImage = {
+    [COUNTRY_FOOD.korean]: koreanImage,
+    [COUNTRY_FOOD.chinese]: chineseImage,
+    [COUNTRY_FOOD.japanese]: japaneseImage,
+    [COUNTRY_FOOD.western]: westernImage,
+    [COUNTRY_FOOD.asian]: asianImage,
+    [COUNTRY_FOOD.etc]: etcImage,
   };
 
+  attributeChangedCallback(name) {
+    if (name === 'category' && name === 'name' && name === 'distance') {
+      this.connectedCallback();
+    }
+  }
+
   connectedCallback() {
-    const globalStyle = document.createElement('style');
+    this.attachShadow({ mode: 'open' });
     const componentStyle = document.createElement('style');
-    globalStyle.textContent = GLOBAL_CSS;
     componentStyle.textContent = `
-    .restaurant {
+      .text-subtitle {
+        font-size: 18px;
+        line-height: 28px;
+        font-weight: 600;
+      }
+      
+      .text-body {
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 400;
+      }
+      
+      li {
         display: flex;
         align-items: flex-start;
       
@@ -34,8 +47,14 @@ class RestaurantBox extends HTMLElement {
       
         border-bottom: 1px solid #e9eaed;
       }
+
+      @media (max-width: 400px) {
+        li {
+          padding: 8px 4px;
+        }
+      }
       
-      .restaurant__category {
+      .category {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -50,26 +69,26 @@ class RestaurantBox extends HTMLElement {
         background: var(--lighten-color);
       }
       
-      .category-icon {
+      img {
         width: 36px;
         height: 36px;
       }
       
-      .restaurant__info {
+      .info {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
       }
       
-      .restaurant__name {
+      .name {
         margin: 0;
       }
       
-      .restaurant__distance {
+      .distance {
         color: var(--primary-color);
       }
       
-      .restaurant__description {
+      .description {
         display: -webkit-box;
       
         padding-top: 8px;
@@ -81,43 +100,38 @@ class RestaurantBox extends HTMLElement {
       }
 `;
 
-    const template = document.createElement('template');
-
     const name = this.getAttribute('name');
     const category = this.getAttribute('category');
     const distance = this.getAttribute('distance');
     const description = this.getAttribute('description') || '';
 
-    template.innerHTML = `
-    <li class="restaurant">
-          <div class="restaurant__category">
-            <img src=${this.getCategoryImage(
-              category
-            )} alt=${category} class="category-icon">
-          </div>
-          <div class="restaurant__info">
-            <h3 class="restaurant__name text-subtitle">${name}</h3>
-            <span class="restaurant__distance text-body">캠퍼스부터 ${distance}분 내</span>
-            <p class="restaurant__description text-body">${description}</p>
-          </div>
-        </li>
+    const NAME_SLICE_NUMBER = 18;
+    const DESCRIPTION_SLICE_NUMBER = 56;
+
+    this.shadowRoot.innerHTML = `
+    <li>
+    <div class="category">
+      <img src=${this.#categoryImage[category]} alt=${category}>
+    </div>
+    <div class="info">
+      <h3 class="name text-subtitle">${shortenString(
+        name,
+        NAME_SLICE_NUMBER
+      )}</h3>
+      <span class="distance text-body">캠퍼스부터 ${distance}분 내</span>
+      <p class="description text-body">${shortenString(
+        description,
+        DESCRIPTION_SLICE_NUMBER
+      )}</p>
+    </div>
+  </li>
     `;
 
-    const cloneNode = template.content.cloneNode(true);
-
-    this.shadowRoot.appendChild(globalStyle);
-    this.shadowRoot.appendChild(componentStyle);
-    this.shadowRoot.appendChild(cloneNode);
+    this.shadowRoot.append(componentStyle);
   }
 
   static get observedAttributes() {
     return ['category', 'name', 'distance', 'description'];
-  }
-
-  attributeChangedCallback(name) {
-    if (name === 'category' && name === 'name' && name === 'distance') {
-      this.connectedCallback();
-    }
   }
 }
 

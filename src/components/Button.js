@@ -1,16 +1,21 @@
-import { GLOBAL_CSS } from '../constants';
 class Button extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+  attributeChangedCallback(name) {
+    if (name === 'name' && name === 'color' && name === 'id') {
+      this.connectedCallback();
+    }
   }
 
   connectedCallback() {
-    const globalStyle = document.createElement('style');
+    this.attachShadow({ mode: 'open' });
     const componentStyle = document.createElement('style');
-    globalStyle.textContent = GLOBAL_CSS;
     componentStyle.textContent = `
-    .button {
+      .text-caption {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+      }
+
+      button {
         width: 171px;
         height: 44px;
       
@@ -35,34 +40,39 @@ class Button extends HTMLElement {
       
         color: var(--grey-100);
       }
+
+      @media (max-width: 500px) {
+        button {
+          width: 150px;
+          height: 44px;
+        
+          margin-right: 16px;
+        
+          border: none;
+          border-radius: 8px;
+        
+          font-weight: 600;
+          cursor: pointer;
+        }
+      }
+
+    
       
 `;
-
-    const template = document.createElement('template');
 
     const name = this.getAttribute('name');
     const id = this.getAttribute('id');
     const color = this.getAttribute('color');
 
-    template.innerHTML = `
-    <button type="button" id=${id} class="button button--${color} text-caption">${name}</button>
+    this.shadowRoot.innerHTML = `
+    <button type="button" id=${id} class="button--${color} text-caption">${name}</button>
     `;
 
-    const cloneNode = template.content.cloneNode(true);
-
-    this.shadowRoot.appendChild(globalStyle);
-    this.shadowRoot.appendChild(componentStyle);
-    this.shadowRoot.appendChild(cloneNode);
+    this.shadowRoot.append(componentStyle);
   }
 
   static get observedAttributes() {
     return ['name', 'color', 'id'];
-  }
-
-  attributeChangedCallback(name) {
-    if (name === 'name' && name === 'color' && name === 'id') {
-      this.connectedCallback();
-    }
   }
 }
 

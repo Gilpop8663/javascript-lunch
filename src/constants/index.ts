@@ -1,6 +1,15 @@
-import { RestaurantInfo } from '../domain/model/Restaurant';
+import { Restaurant } from '../domain/model/RestaurantList';
 
-const DEFAULT_RESTAURANTS: RestaurantInfo[] = [
+const COUNTRY_FOOD = Object.freeze({
+  korean: '한식',
+  japanese: '일식',
+  chinese: '중식',
+  western: '양식',
+  asian: '아시안',
+  etc: '기타',
+});
+
+const DEFAULT_RESTAURANTS: Restaurant[] = [
   {
     name: '이승재참치',
     category: '일식',
@@ -73,32 +82,6 @@ const DEFAULT_RESTAURANTS: RestaurantInfo[] = [
   },
 ];
 
-const GLOBAL_CSS = `
-/* Typography *************************************/
-.text-title {
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: 600;
-}
+const LOCAL_STORAGE_KEY = 'userList';
 
-.text-subtitle {
-  font-size: 18px;
-  line-height: 28px;
-  font-weight: 600;
-}
-
-.text-body {
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-}
-
-.text-caption {
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
- }
-}
-  `;
-
-export { DEFAULT_RESTAURANTS, GLOBAL_CSS };
+export { COUNTRY_FOOD, DEFAULT_RESTAURANTS, LOCAL_STORAGE_KEY };

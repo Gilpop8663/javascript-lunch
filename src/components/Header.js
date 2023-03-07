@@ -1,18 +1,18 @@
-import { GLOBAL_CSS } from '../constants';
 import logo from '../assets/add-button.png';
+import { $ } from '../utils';
 
 class Header extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
   connectedCallback() {
-    const globalStyle = document.createElement('style');
+    this.attachShadow({ mode: 'open' });
     const componentStyle = document.createElement('style');
-    globalStyle.textContent = GLOBAL_CSS;
     componentStyle.textContent = `
-    .gnb {
+    .text-title {
+      font-size: 20px;
+      line-height: 24px;
+      font-weight: 600;
+    }
+
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -23,11 +23,11 @@ class Header extends HTMLElement {
       background-color: var(--primary-color);
     }
     
-    .gnb__title {
+    h1 {
       color: #fcfcfd;
     }
     
-    .gnb__button {
+    button {
       height: 40px;
     
       border: none;
@@ -38,7 +38,7 @@ class Header extends HTMLElement {
       cursor: pointer;
     }
     
-    .gnb__button img {
+    img {
       display: block;
       width: 40px;
       height: 40px;
@@ -46,22 +46,27 @@ class Header extends HTMLElement {
     }
 `;
 
-    const template = document.createElement('template');
-
-    template.innerHTML = `
-    <header id="head" class="gnb">
-      <h1 class="gnb__title text-title">점심 뭐 먹지</h1>
-      <button type="button" id="openModal" class="gnb__button" aria-label="음식점 추가">
-        <img src=${logo} alt="음식점 추가" />
-      </button>
-    </header>
+    this.shadowRoot.innerHTML = `
+      <header id="head" >
+        <h1 class="text-title">점심 뭐 먹지</h1>
+        <button type="button" id="openModal" aria-label="음식점 추가">
+          <img src=${logo} alt="음식점 추가" />
+        </button>
+      </header>
     `;
 
-    const cloneNode = template.content.cloneNode(true);
+    this.shadowRoot.append(componentStyle);
 
-    this.shadowRoot.appendChild(globalStyle);
-    this.shadowRoot.appendChild(componentStyle);
-    this.shadowRoot.appendChild(cloneNode);
+    this.openModalEvent();
+  }
+
+  openModalEvent() {
+    this.shadowRoot
+      .querySelector('#openModal')
+      .addEventListener('click', () => {
+        $('add-restaurant-modal').modalOpen(true);
+        $('body').classList.add('scroll-hidden');
+      });
   }
 }
 

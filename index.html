@@ -4,31 +4,22 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./src/styles/index.css" />
     <title>점심 뭐 먹지</title>
   </head>
-
   <body>
     <div id="app">
-      <!-- GNB -->
       <lunch-header></lunch-header>
-      <!-- 카테고리/정렬 필터 -->
       <section class="restaurant-filter-container">
-        <category-list
+        <filter-box
           name="category"
           id="categoryFilter"
           options="전체,한식,중식,일식,양식,아시안,기타"
-        ></category-list>
-        <!-- 정렬 셀렉트 박스 -->
-        <category-list
-          name="sorting"
-          id="sortingFilter"
-          options="이름순,거리순"
-        >
-        </category-list>
+        ></filter-box>
+        <filter-box name="sorting" id="sortingFilter" options="이름순,거리순">
+        </filter-box>
       </section>
-      <ul id="restaurantList" class="restaurant-list"></ul>
-      <add-restaurant-modal> </add-restaurant-modal>
+      <restaurant-boxes></restaurant-boxes>
+      <add-restaurant-modal />
     </div>
   </body>
 </html>

@@ -1,42 +1,45 @@
-import { GLOBAL_CSS } from '../constants';
-
 class AddTextInput extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+  attributeChangedCallback(name) {
+    if (name === 'name' && name === 'id' && name === 'caption') {
+      this.connectedCallback();
+    }
   }
 
   connectedCallback() {
-    const globalStyle = document.createElement('style');
+    this.attachShadow({ mode: 'open' });
     const componentStyle = document.createElement('style');
-    globalStyle.textContent = GLOBAL_CSS;
     componentStyle.textContent = `
-    .form-item {
+      .text-caption {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+      }
+      
+      .container {
         display: flex;
         flex-direction: column;
       
         margin-bottom: 36px;
       }
       
-      .form-item label {
+      label {
         color: var(--grey-400);
         font-size: 14px;
       }
       
-      .form-item--required label::after {
+      .required label::after {
         padding-left: 4px;
       
         color: var(--primary-color);
         content: "*";
       }
       
-      .form-item .help-text {
+      .help-text {
         color: var(--grey-300);
       }
       
-      .form-item input,
-      .form-item textarea,
-      .form-item select {
+      input, textarea
+       {
         padding: 0 8px;
         margin: 6px 0;
       
@@ -46,76 +49,132 @@ class AddTextInput extends HTMLElement {
         font-size: 16px;
       }
       
-      .form-item textarea {
+      textarea {
+        padding: 8px;
         resize: none;
       }
       
-      .form-item select {
+      input {
         height: 44px;
-      
-        padding: 8px;
-      
-        border: 1px solid var(--grey-200);
-        border-radius: 8px;
-      
-        color: var(--grey-300);
       }
-      
-      input[name="name"],
-      input[name="link"] {
-        height: 44px;
+
+      .error{
+        color: red;
+        padding: 2px 6px;
       }
 `;
 
-    const template = document.createElement('template');
+    this.shadowRoot.innerHTML = this.getTextInputTemplate();
+
+    this.shadowRoot.append(componentStyle);
+
+    this.setErrorRemoveEvent();
+  }
+
+  getErrorKind() {
+    this.removeError();
+
+    const id = this.getAttribute('id');
+    const textValue = this.getTextValue();
+
+    const nameError = this.getNameErrorMessage(id, textValue);
+    if (nameError) {
+      return nameError;
+    }
+
+    const textError = this.getTextErrorMessage(id, textValue);
+    if (textError) {
+      return textError;
+    }
+
+    return false;
+  }
+
+  getNameErrorMessage(kind, textValue) {
+    if (kind !== 'name') return null;
+    if (textValue === '') return '이 값은 필수로 입력해야 합니다.';
+    if (textValue.length > 30 || textValue < 2) {
+      return '이름은 2자 이상 30자 이하만 가능합니다.';
+    }
+    return null;
+  }
+
+  getTextErrorMessage(kind, textValue) {
+    if (textValue.length > 1000) {
+      return `${
+        kind === 'link' ? '링크' : '설명'
+      } 값은 1000자 이하로만 가능합니다.`;
+    }
+    return null;
+  }
+
+  getTextInputTemplate() {
     const name = this.getAttribute('name');
     const id = this.getAttribute('id');
     const caption = this.getAttribute('caption') || '';
 
     if (id === 'name') {
-      template.innerHTML = `
-        <div class="form-item form-item--required">
-                <label for="${id} text-caption">${name}</label>
-                <input type="text" name="${id}" id="${id}Input" required>
-              </div>
-        `;
+      return `<div class="container required">
+              <label for="${id} text-caption">${name}</label>
+              <input type="text" name="${id}" id="${id}" required>
+            /div>`;
     }
 
     if (id === 'description') {
-      template.innerHTML = `
-      <div class="form-item">
-            <label for="${id} text-caption">${name}</label>
-            <textarea name="${id}" id="${id}Input" cols="30" rows="5"></textarea>
-            <span class="help-text text-caption">${caption}</span>
-          </div>
-        `;
-    }
-
-    if (id === 'link') {
-      template.innerHTML = `
-        <div class="form-item">
+      return `<div class="container">
                 <label for="${id} text-caption">${name}</label>
-                <input type="text" name="${id}" id="${id}Input">
+                <textarea name="${id}" id="${id}" cols="30" rows="5"></textarea>
                 <span class="help-text text-caption">${caption}</span>
-              </div>
-        `;
+              </div>`;
     }
 
-    const cloneNode = template.content.cloneNode(true);
+    return `<div class="container">
+              <label for="${id} text-caption">${name}</label>
+              <input type="text" name="${id}" id="${id}">
+              <span class="help-text text-caption">${caption}</span>
+            </div>`;
+  }
 
-    this.shadowRoot.appendChild(globalStyle);
-    this.shadowRoot.appendChild(componentStyle);
-    this.shadowRoot.appendChild(cloneNode);
+  getTextValue() {
+    const id = this.getAttribute('id');
+    return this.shadowRoot.querySelector(`#${id}`).value;
   }
 
   static get observedAttributes() {
     return ['name', 'id', 'caption'];
   }
 
-  attributeChangedCallback(name) {
-    if (name === 'name' && name === 'id' && name === 'caption') {
-      this.connectedCallback();
+  removeError() {
+    const errorMessage = this.shadowRoot.querySelector('.error');
+
+    if (errorMessage) {
+      this.shadowRoot.querySelector('.container').removeChild(errorMessage);
     }
+  }
+
+  reset() {
+    const id = this.getAttribute('id');
+    this.shadowRoot.querySelector(`#${id}`).value = '';
+  }
+
+  setErrorRemoveEvent() {
+    const id = this.getAttribute('id');
+
+    this.shadowRoot.querySelector(`#${id}`).addEventListener('input', () => {
+      const textValue = this.getTextValue();
+      const nameError = this.getNameErrorMessage(id, textValue);
+      const textError = this.getTextErrorMessage(id, textValue);
+      if (nameError === null && textError === null) {
+        this.removeError();
+      }
+    });
+  }
+
+  showErrorMessage(message) {
+    const errorMessage = document.createElement('div');
+    errorMessage.innerText = message;
+    errorMessage.className = 'error text-caption';
+    this.shadowRoot.querySelector('.container').append(errorMessage);
   }
 }
 
