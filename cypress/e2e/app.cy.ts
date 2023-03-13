@@ -1,10 +1,7 @@
-import {
-  DEFAULT_RESTAURANTS,
-  LOCAL_STORAGE_KEY,
-} from '../../src/constants/index';
+import { LOCAL_STORAGE_KEY } from '../../src/constants/index';
 
 describe('점심 뭐 먹지 사이트 전체 테스트', () => {
-  it('페이지에 접속하여 음식점을 추가한다.', () => {
+  it('페이지에 접속하여 음식점을 추가한다. 즐겨찾기를 한 후 자주 가는 음식점 탭에 있는 지 확인하며 즐겨찾기를 해제한다. 자주 가는 음식점 목록이 비었는 지 확인한다.', () => {
     //given
     cy.visit('http://localhost:8080/', {
       onBeforeLoad(win) {
@@ -122,5 +119,50 @@ describe('점심 뭐 먹지 사이트 전체 테스트', () => {
       .shadow()
       .find('div')
       .should('have.text', '음식점 목록이 비었습니다');
+  });
+
+  it('음식점을 눌러 상세 정보를 확인한다. 닫기를 눌러 창을 닫는다. 다시 음식점을 눌러 상세 정보 창을 띄워 삭제를 한다.', () => {
+    //given
+    cy.visit('http://localhost:8080/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem(LOCAL_STORAGE_KEY, '[]');
+      },
+    });
+
+    //when
+    cy.get('restaurant-boxes')
+      .shadow()
+      .find('#이승재참치')
+      .shadow()
+      .find('li')
+      .click();
+
+    cy.get('restaurant-detail-modal')
+      .shadow()
+      .find('restaurant-detail')
+      .shadow()
+      .find('#cancelModal')
+      .click();
+
+    cy.get('restaurant-boxes')
+      .shadow()
+      .find('#이승재참치')
+      .shadow()
+      .find('li')
+      .click();
+
+    cy.get('restaurant-detail-modal')
+      .shadow()
+      .find('restaurant-detail')
+      .shadow()
+      .find('#deleteRestaurant')
+      .click();
+
+    cy.get('delete-question-modal')
+      .shadow()
+      .find('delete-question')
+      .shadow()
+      .find('#deleteRestaurant')
+      .click();
   });
 });
