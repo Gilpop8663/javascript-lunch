@@ -33,3 +33,25 @@ npm install
 ```
 npm run start
 ```
+
+## 테스트 방법
+
+1. unit test
+
+```
+npm run test-unit
+```
+
+2. e2e test
+
+   2-1. 로컬 서버를 실행시킨다.
+
+   ```
+   npm run start
+   ```
+
+   2-2. 테스트를 실행한다.
+
+   ```
+   npm run test-e2e
+   ```
