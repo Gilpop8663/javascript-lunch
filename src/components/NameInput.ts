@@ -1,6 +1,6 @@
 import TextInput from './TextInput';
 
-class DescriptionInput extends TextInput {
+class NameInput extends TextInput {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
     this.render();
@@ -11,16 +11,14 @@ class DescriptionInput extends TextInput {
   render() {
     const id = this.getAttribute('id');
     const name = this.getAttribute('name');
-    const caption = this.getAttribute('caption');
 
-    this.shadowRoot.innerHTML = `
-    <div class="container">
+    this.shadowRoot!.innerHTML = `
+    <div class="container required">
       <label for="${id}" class="text-caption">${name}</label>
-      <textarea name="${id}" id="${id}" cols="30" rows="5"></textarea>
-      <span class="help-text text-caption">${caption}</span>
+      <input type="text" name="${id}" id="${id}" required>
       <div id="lengthContainer" class="length-info">
         <span id="length">0</span>
-        <span>/1000</span>
+        <span>/30</span>
       </div>
     </div>`;
   }
@@ -38,9 +36,10 @@ class DescriptionInput extends TextInput {
     return false;
   }
 
-  getErrorMessage(textValue) {
-    if (textValue.length > 1000) {
-      return '설명 값은 1000자 이하로만 가능합니다.';
+  getErrorMessage(textValue: string) {
+    if (textValue === '') return '이 값은 필수로 입력해야 합니다.';
+    if (textValue.length > 30 || textValue.length < 2) {
+      return '이름은 2자 이상 30자 이하만 가능합니다.';
     }
     return null;
   }
@@ -48,13 +47,15 @@ class DescriptionInput extends TextInput {
   setErrorRemoveEvent() {
     const id = this.getAttribute('id');
 
-    this.shadowRoot.querySelector(`#${id}`).addEventListener('input', () => {
+    this.shadowRoot!.querySelector(`#${id}`)?.addEventListener('input', () => {
       const textValue = this.getTextValue();
       const nameError = this.getErrorMessage(textValue);
 
-      this.shadowRoot.querySelector(
+      const textLength = this.shadowRoot!.querySelector(
         '#length'
-      ).innerText = `${textValue.length}`;
+      ) as HTMLSpanElement;
+
+      textLength.innerText = `${textValue.length}`;
 
       this.setLengthError(textValue);
 
@@ -64,18 +65,18 @@ class DescriptionInput extends TextInput {
     });
   }
 
-  setLengthError(textValue) {
-    if (textValue.length > 1000) {
-      this.shadowRoot
-        .querySelector('#lengthContainer')
-        .classList.add('length-error');
+  setLengthError(textValue: string) {
+    if (textValue.length > 30) {
+      this.shadowRoot!.querySelector('#lengthContainer')?.classList.add(
+        'length-error'
+      );
       return;
     }
 
-    this.shadowRoot
-      .querySelector('#lengthContainer')
-      .classList.remove('length-error');
+    this.shadowRoot!.querySelector('#lengthContainer')?.classList.remove(
+      'length-error'
+    );
   }
 }
 
-export default DescriptionInput;
+export default NameInput;

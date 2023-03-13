@@ -1,5 +1,5 @@
 class AddSelect extends HTMLElement {
-  createOption(title, kind) {
+  createOption(title: string, kind: 'distance' | 'category') {
     if (kind === 'distance') {
       return `<option value="${title}">${title}분 내</option>`;
     }
@@ -13,9 +13,13 @@ class AddSelect extends HTMLElement {
     this.setRemoveErrorEvent();
   }
 
-  getSelectValue() {
+  getSelectValue(): string {
     const id = this.getAttribute('id');
-    return this.shadowRoot.querySelector(`#${id}`).value;
+    const select = this.shadowRoot!.querySelector(
+      `#${id}`
+    ) as HTMLSelectElement;
+
+    return select.value;
   }
 
   isError() {
@@ -31,31 +35,35 @@ class AddSelect extends HTMLElement {
 
   reset() {
     const id = this.getAttribute('id');
-    this.shadowRoot.querySelector(`#${id}`).value = '';
+    const select = this.shadowRoot!.querySelector(
+      `#${id}`
+    ) as HTMLSelectElement;
+
+    select.value = '';
   }
 
   removeError() {
-    const errorMessage = this.shadowRoot.querySelector('.error');
+    const errorMessage = this.shadowRoot!.querySelector('.error');
 
     if (errorMessage) {
-      this.shadowRoot.querySelector('.container').removeChild(errorMessage);
+      this.shadowRoot!.querySelector('.container')?.removeChild(errorMessage);
     }
   }
 
   render() {
     const name = this.getAttribute('name');
-    const id = this.getAttribute('id');
-    const optionsAttribute = this.getAttribute('options').split(',');
-    const options = optionsAttribute.map((option) =>
+    const id = this.getAttribute('id') as 'distance' | 'category';
+    const optionsAttribute = this.getAttribute('options')?.split(',');
+    const options = optionsAttribute?.map((option) =>
       this.createOption(option, id)
     );
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="container">
       <label for="${id}" class="text-caption">${name}</label>
         <select name="${id}" id="${id}" required>
           <option value="">선택해 주세요</option>
-            ${options.join('\n')}
+            ${options?.join('\n')}
         </select>
     </div>
     `;
@@ -107,11 +115,11 @@ class AddSelect extends HTMLElement {
       }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 
   setRemoveErrorEvent() {
-    this.shadowRoot.querySelector('select').addEventListener('change', () => {
+    this.shadowRoot!.querySelector('select')?.addEventListener('change', () => {
       if (this.getSelectValue()) {
         this.removeError();
       }
@@ -122,7 +130,7 @@ class AddSelect extends HTMLElement {
     const errorMessage = document.createElement('div');
     errorMessage.innerText = '이 값은 필수로 입력해야 합니다.';
     errorMessage.className = 'error text-caption';
-    this.shadowRoot.querySelector('.container').append(errorMessage);
+    this.shadowRoot!.querySelector('.container')?.append(errorMessage);
   }
 }
 

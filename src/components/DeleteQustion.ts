@@ -1,5 +1,8 @@
-import RestaurantList from '../domain/RestaurantList.ts';
+import RestaurantList from '../domain/RestaurantList';
 import { $ } from '../utils';
+import DeleteQustionModal from './DeleteQuestionModal';
+import RestaurantBoxes from './RestaurantBoxes';
+import RestaurantDetailModal from './RestaurantDetailModal';
 
 class DeleteQustion extends HTMLElement {
   connectedCallback() {
@@ -11,29 +14,40 @@ class DeleteQustion extends HTMLElement {
   }
 
   cancleClickEvent() {
-    this.shadowRoot.querySelector('#cancel').addEventListener('click', () => {
-      $('#deleteQuestionModal').closeModal();
+    this.shadowRoot!.querySelector('#cancel')?.addEventListener('click', () => {
+      const deleteQustionModal = $(
+        '#deleteQuestionModal'
+      ) as DeleteQustionModal;
+
+      deleteQustionModal.closeModal();
     });
   }
 
   deleteRestaurant() {
     const name = this.getAttribute('name');
+
+    if (!name) return;
+    const deleteQustionModal = $('#deleteQuestionModal') as DeleteQustionModal;
+    const openDetail = $('#openDetail') as RestaurantDetailModal;
+    const list = $('restaurant-boxes') as RestaurantBoxes;
+
     RestaurantList.delete(name);
-    $('#deleteQuestionModal').closeModal();
-    $('#openDetail').closeModal();
-    $('restaurant-boxes').drawRestaurants();
+    deleteQustionModal.closeModal();
+    openDetail.closeModal();
+    list.drawRestaurants();
   }
 
   deleteClickEvent() {
-    this.shadowRoot
-      .querySelector('#deleteRestaurant')
-      .addEventListener('click', () => {
+    this.shadowRoot!.querySelector('#deleteRestaurant')?.addEventListener(
+      'click',
+      () => {
         this.deleteRestaurant();
-      });
+      }
+    );
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="check-modal fixed-size">
         <h3 class="check-text">정말 삭제하시겠습니까?</h3>
         <div class="button-container">
@@ -97,10 +111,10 @@ class DeleteQustion extends HTMLElement {
       }
     `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 
-  setDeleteName(name) {
+  setDeleteName(name: string) {
     this.setAttribute('name', name);
   }
 }

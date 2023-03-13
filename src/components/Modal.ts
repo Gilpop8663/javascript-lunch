@@ -9,16 +9,19 @@ class Modal extends HTMLElement {
   }
 
   closeModal() {
+    const body = $('body') as HTMLBodyElement;
+
     this.modalToggle(false);
-    $('body').classList.remove('scroll-hidden');
+    body.classList.remove('scroll-hidden');
   }
 
   closeModalEvent() {
-    this.shadowRoot
-      .querySelector('#modalBackdrop')
-      .addEventListener('click', () => {
+    this.shadowRoot!.querySelector('#modalBackdrop')?.addEventListener(
+      'click',
+      () => {
         this.closeModal();
-      });
+      }
+    );
 
     document.addEventListener('keydown', (event) => {
       if (event.code === 'Escape') {
@@ -27,23 +30,25 @@ class Modal extends HTMLElement {
     });
   }
 
-  modalToggle(isOpen) {
+  modalToggle(isOpen: boolean) {
     if (isOpen) {
-      this.shadowRoot.querySelector('#modal').classList.add('modal-open');
+      this.shadowRoot!.querySelector('#modal')?.classList.add('modal-open');
       return;
     }
-    this.shadowRoot.querySelector('#modal').classList.remove('modal-open');
+    this.shadowRoot!.querySelector('#modal')?.classList.remove('modal-open');
   }
 
   openModal() {
+    const body = $('body') as HTMLBodyElement;
+
     this.modalToggle(true);
-    $('body').classList.add('scroll-hidden');
+    body.classList.add('scroll-hidden');
   }
 
   render() {
     const kind = this.getAttribute('kind');
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div id="modal" class="modal" alt="modal">
         <div id="modalBackdrop" class="backdrop"></div>
         ${kind === 'add' && '<add-restaurant-form></add-restaurant-form>'}
@@ -52,7 +57,7 @@ class Modal extends HTMLElement {
 `;
   }
 
-  setComponentStyle(zIndex) {
+  setComponentStyle({ zIndex } = { zIndex: 0 }) {
     const componentStyle = document.createElement('style');
     componentStyle.textContent = `
       .modal {
@@ -76,7 +81,7 @@ class Modal extends HTMLElement {
       }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

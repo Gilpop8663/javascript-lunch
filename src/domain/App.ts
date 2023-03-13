@@ -1,27 +1,35 @@
 import RestaurantList, { Restaurant } from './RestaurantList';
-import { $ } from '../utils';
+import RestaurantBoxes from '../components/RestaurantBoxes';
+import RestaurantTab from '../components/RestaurantTab';
 import { DEFAULT_RESTAURANTS, LOCAL_STORAGE_KEY } from '../constants';
+import { $ } from '../utils';
 
 class App {
   play() {
+    const restaurantList = $('restaurant-boxes') as RestaurantBoxes;
+
     this.setRestaurantData();
     this.selectEvent();
-    $('restaurant-boxes').drawRestaurants();
+    restaurantList.drawRestaurants();
   }
 
   selectEvent() {
-    $('#favoriteTab').notSelect();
+    const allTab = $('#allTab') as RestaurantTab;
+    const favoriteTab = $('#favoriteTab') as RestaurantTab;
+    const restaurantList = $('restaurant-boxes') as RestaurantBoxes;
 
-    $('#allTab').addEventListener('click', () => {
-      $('#allTab').select();
-      $('#favoriteTab').notSelect();
-      $('restaurant-boxes').drawRestaurants();
+    favoriteTab.notSelect();
+
+    allTab.addEventListener('click', () => {
+      allTab.select();
+      favoriteTab.notSelect();
+      restaurantList.drawRestaurants();
     });
 
-    $('#favoriteTab').addEventListener('click', () => {
-      $('#allTab').notSelect();
-      $('#favoriteTab').select();
-      $('restaurant-boxes').drawRestaurants();
+    favoriteTab.addEventListener('click', () => {
+      allTab.notSelect();
+      favoriteTab.select();
+      restaurantList.drawRestaurants();
     });
   }
 

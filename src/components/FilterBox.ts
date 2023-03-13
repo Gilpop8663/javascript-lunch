@@ -1,14 +1,17 @@
 import { $ } from '../utils';
+import RestaurantBoxes from './RestaurantBoxes';
 
 class FilterBox extends HTMLElement {
   changeValueEvent() {
-    this.shadowRoot.querySelector('select').addEventListener('change', () => {
-      $('restaurant-boxes').drawRestaurants();
+    this.shadowRoot!.querySelector('select')?.addEventListener('change', () => {
+      const restaurantList = $('restaurant-boxes') as RestaurantBoxes;
+
+      restaurantList.drawRestaurants();
       window.scrollTo(0, 0);
     });
   }
 
-  createOption(title) {
+  createOption(title: string) {
     return `<option value="${title}">${title}</option>`;
   }
 
@@ -21,7 +24,11 @@ class FilterBox extends HTMLElement {
 
   getSelectValue() {
     const id = this.getAttribute('id');
-    return this.shadowRoot.querySelector(`#${id}`).value;
+    const select = this.shadowRoot!.querySelector(
+      `#${id}`
+    ) as HTMLSelectElement;
+
+    return select.value;
   }
 
   static get observedAttributes() {
@@ -31,12 +38,14 @@ class FilterBox extends HTMLElement {
   render() {
     const name = this.getAttribute('name');
     const id = this.getAttribute('id');
-    const optionsAttribute = this.getAttribute('options').split(',');
-    const options = optionsAttribute.map((option) => this.createOption(option));
+    const optionsAttribute = this.getAttribute('options')?.split(',');
+    const options = optionsAttribute?.map((option) =>
+      this.createOption(option)
+    );
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
       <select name="${name}" id="${id}">
-        ${options.join('\n')}
+        ${options?.join('\n')}
       </select>
     `;
   }
@@ -55,7 +64,7 @@ class FilterBox extends HTMLElement {
         }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

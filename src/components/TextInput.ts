@@ -1,7 +1,11 @@
 class TextInput extends HTMLElement {
   getTextValue() {
     const id = this.getAttribute('id');
-    return this.shadowRoot.querySelector(`#${id}`).value.trim();
+    const textInput = this.shadowRoot!.querySelector(
+      `#${id}`
+    ) as HTMLInputElement;
+
+    return textInput.value.trim();
   }
 
   static get observedAttributes() {
@@ -9,17 +13,24 @@ class TextInput extends HTMLElement {
   }
 
   removeError() {
-    const errorMessage = this.shadowRoot.querySelector('.error');
+    const errorMessage = this.shadowRoot!.querySelector('.error');
 
     if (errorMessage) {
-      this.shadowRoot.querySelector('.container').removeChild(errorMessage);
+      this.shadowRoot!.querySelector('.container')?.removeChild(errorMessage);
     }
   }
 
   reset() {
     const id = this.getAttribute('id');
-    this.shadowRoot.querySelector(`#${id}`).value = '';
-    this.shadowRoot.querySelector('#length').innerText = '0';
+    const textInput = this.shadowRoot!.querySelector(
+      `#${id}`
+    ) as HTMLInputElement;
+    const textLength = this.shadowRoot!.querySelector(
+      '#length'
+    ) as HTMLSpanElement;
+
+    textInput.value = '';
+    textLength.innerText = '0';
   }
 
   setComponentStyle() {
@@ -89,14 +100,14 @@ class TextInput extends HTMLElement {
       }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 
-  showErrorMessage(message) {
+  showErrorMessage(message: string) {
     const errorMessage = document.createElement('div');
     errorMessage.innerText = message;
     errorMessage.className = 'error text-caption';
-    this.shadowRoot.querySelector('.container').append(errorMessage);
+    this.shadowRoot!.querySelector('.container')?.append(errorMessage);
   }
 }
 

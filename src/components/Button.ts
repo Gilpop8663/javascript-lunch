@@ -14,7 +14,7 @@ class Button extends HTMLElement {
     const id = this.getAttribute('id');
     const color = this.getAttribute('color');
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <button type="button" id="${id}" alt="${id}" class="button--${color} text-caption">${name}</button>
     `;
   }
@@ -70,7 +70,7 @@ class Button extends HTMLElement {
         }
       }`;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

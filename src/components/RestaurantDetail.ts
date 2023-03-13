@@ -1,24 +1,37 @@
-import RestaurantList from '../domain/RestaurantList.ts';
+import RestaurantList, {
+  Category,
+  Distance,
+  Restaurant,
+} from '../domain/RestaurantList';
 import { $, shortenString } from '../utils';
+import Button from './Button';
+import DeleteQustionModal from './DeleteQuestionModal';
+import RestaurantBoxes from './RestaurantBoxes';
+import RestaurantDetailModal from './RestaurantDetailModal';
 
 class RestaurantDetail extends HTMLElement {
-  attributeChangedCallback(name) {
-    if (
-      name === 'category' &&
-      name === 'name' &&
-      name === 'distance' &&
-      name === 'isFavorite'
-    ) {
-      this.connectedCallback();
-    }
-  }
+  // attributeChangedCallback(name: string) {
+  //   if (
+  //     name === 'category' &&
+  //     name === 'name' &&
+  //     name === 'distance' &&
+  //     name === 'isFavorite'
+  //   ) {
+  //     this.connectedCallback();
+  //   }
+  // }
 
   closeModalEvent() {
-    this.shadowRoot
-      .querySelector('#cancelModal')
-      .addEventListener('click', () => {
-        $('restaurant-detail-modal').closeModal();
-      });
+    this.shadowRoot!.querySelector('#cancelModal')?.addEventListener(
+      'click',
+      () => {
+        const restaurantDetailModal = $(
+          'restaurant-detail-modal'
+        ) as RestaurantDetailModal;
+
+        restaurantDetailModal.closeModal();
+      }
+    );
   }
 
   connectedCallback() {
@@ -27,15 +40,21 @@ class RestaurantDetail extends HTMLElement {
 
   deleteClickEvent() {
     const { name } = this.getInformation();
-    this.shadowRoot
-      .querySelector('#deleteRestaurant')
-      .addEventListener('click', () => {
-        $('#deleteQuestionModal').openModal();
-        $('#deleteQuestionModal').setDeleteName(name);
-      });
+    const deleteButton = this.shadowRoot!.querySelector(
+      '#deleteRestaurant'
+    ) as Button;
+
+    deleteButton.addEventListener('click', () => {
+      const deleteQustionModal = $(
+        '#deleteQuestionModal'
+      ) as DeleteQustionModal;
+
+      deleteQustionModal.openModal();
+      deleteQustionModal.setDelete(name);
+    });
   }
 
-  update(restaurant) {
+  update(restaurant: Restaurant) {
     this.setInformation(restaurant);
     this.render(restaurant);
     this.setComponentStyle();
@@ -45,36 +64,39 @@ class RestaurantDetail extends HTMLElement {
   }
 
   favoriteClickEvent() {
-    this.shadowRoot
-      .querySelector('favorite-image')
-      .addEventListener('click', (event) => {
+    this.shadowRoot!.querySelector('favorite-image')?.addEventListener(
+      'click',
+      (event) => {
+        const list = $('restaurant-boxes') as RestaurantBoxes;
+
         event.stopPropagation();
-        const restaurant = this.getInformation();
+        const restaurant: Restaurant = this.getInformation();
         RestaurantList.updateFavorite(restaurant.name);
-        $('restaurant-boxes').drawRestaurants();
+        list.drawRestaurants();
         this.update({ ...restaurant, isFavorite: !restaurant.isFavorite });
-      });
+      }
+    );
   }
 
-  setInformation(restaurant) {
+  setInformation(restaurant: Restaurant) {
     const { name, category, distance, description, link, isFavorite } =
       restaurant;
 
     this.setAttribute('name', name);
     this.setAttribute('category', category);
-    this.setAttribute('distance', distance);
-    this.setAttribute('description', description);
-    this.setAttribute('link', link);
-    this.setAttribute('isFavorite', isFavorite);
+    this.setAttribute('distance', distance.toString());
+    this.setAttribute('description', description || '');
+    this.setAttribute('link', link || '');
+    this.setAttribute('isFavorite', isFavorite.toString());
   }
 
   getInformation() {
-    const name = this.getAttribute('name');
-    const category = this.getAttribute('category');
-    const distance = this.getAttribute('distance');
-    const description = this.getAttribute('description');
-    const link = this.getAttribute('link');
-    const isFavorite = this.getAttribute('isFavorite');
+    const name = this.getAttribute('name') || '';
+    const category = this.getAttribute('category') as Category;
+    const distance = Number(this.getAttribute('distance')) as Distance;
+    const description = this.getAttribute('description') || '';
+    const link = this.getAttribute('link') || '';
+    const isFavorite = Boolean(this.getAttribute('isFavorite'));
 
     return {
       name,
@@ -82,7 +104,7 @@ class RestaurantDetail extends HTMLElement {
       distance,
       description,
       link,
-      isFavorite: isFavorite === 'true',
+      isFavorite,
     };
   }
 
@@ -97,11 +119,11 @@ class RestaurantDetail extends HTMLElement {
     ];
   }
 
-  render(restaurant) {
+  render(restaurant: Restaurant) {
     const { name, category, distance, description, link, isFavorite } =
       restaurant;
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="container fixed-size">
       <div class="wrapper">
       <div class="image-container">
@@ -115,7 +137,7 @@ class RestaurantDetail extends HTMLElement {
        <span class="m-4 distance text-body">캠퍼스부터 ${distance}분 내</span>
        <p class="m-4 text-body description scrollbar-hide">${description}</p>
        <a class="m-4 text-body link" title="${link}" href="${link}" target="_blank">${shortenString(
-      link,
+      link || '',
       25
     )}</a>
     </div>
@@ -228,7 +250,7 @@ class RestaurantDetail extends HTMLElement {
 
   `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

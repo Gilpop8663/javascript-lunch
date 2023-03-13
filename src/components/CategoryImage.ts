@@ -1,10 +1,19 @@
-import { COUNTRY_FOOD } from '../constants/index.ts';
-import asianImage from '../assets/category-asian.png';
-import chineseImage from '../assets/category-chinese.png';
-import etcImage from '../assets/category-etc.png';
-import japaneseImage from '../assets/category-japanese.png';
-import koreanImage from '../assets/category-korean.png';
-import westernImage from '../assets/category-western.png';
+import { COUNTRY_FOOD } from '@/constants';
+import asianImage from '@assets/category-asian.png';
+import chineseImage from '@assets/category-chinese.png';
+import etcImage from '@assets/category-etc.png';
+import japaneseImage from '@assets/category-japanese.png';
+import koreanImage from '@assets/category-korean.png';
+import westernImage from '@assets/category-western.png';
+
+interface CategoryImages {
+  [COUNTRY_FOOD.asian]: File;
+  [COUNTRY_FOOD.chinese]: File;
+  [COUNTRY_FOOD.etc]: File;
+  [COUNTRY_FOOD.korean]: File;
+  [COUNTRY_FOOD.japanese]: File;
+  [COUNTRY_FOOD.western]: File;
+}
 
 class CategoryImage extends HTMLElement {
   #categoryImage = {
@@ -28,11 +37,12 @@ class CategoryImage extends HTMLElement {
 
   render() {
     const category = this.getAttribute('category');
+    const categoryImage = this.#categoryImage[category as keyof CategoryImages];
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="category" >
       <img title="${category}" 
-      src=${this.#categoryImage[category]} alt=${category}>
+      src=${categoryImage} alt=${category}>
     </div>
     `;
   }
@@ -59,7 +69,7 @@ class CategoryImage extends HTMLElement {
       }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

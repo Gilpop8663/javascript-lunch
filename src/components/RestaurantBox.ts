@@ -1,21 +1,37 @@
-import RestaurantList from '../domain/RestaurantList.ts';
+import RestaurantList, { Restaurant } from '../domain/RestaurantList';
 import { $, shortenString } from '../utils';
+import RestaurantBoxes from './RestaurantBoxes';
+import RestaurantDetailModal from './RestaurantDetailModal';
 
 class RestaurantBox extends HTMLElement {
-  favoriteClickEvent({ name }) {
-    this.shadowRoot
-      .querySelector('favorite-image')
-      .addEventListener('click', (event) => {
+  favoriteClickEvent({ name }: Restaurant) {
+    this.shadowRoot!.querySelector('favorite-image')?.addEventListener(
+      'click',
+      (event) => {
+        const list = $('restaurant-boxes') as RestaurantBoxes;
+
         event.stopPropagation();
         RestaurantList.updateFavorite(name);
-        $('restaurant-boxes').drawRestaurants();
-      });
+        list.drawRestaurants();
+      }
+    );
   }
 
-  showDetailEvent({ name, category, distance, description, link, isFavorite }) {
-    this.shadowRoot.querySelector('li').addEventListener('click', () => {
-      $('restaurant-detail-modal').openModal();
-      $('restaurant-detail-modal').renderDetailRestaurant({
+  showDetailEvent({
+    name,
+    category,
+    distance,
+    description,
+    link,
+    isFavorite,
+  }: Restaurant) {
+    this.shadowRoot!.querySelector('li')?.addEventListener('click', () => {
+      const restaurantDetailModal = $(
+        'restaurant-detail-modal'
+      ) as RestaurantDetailModal;
+
+      restaurantDetailModal.openModal();
+      restaurantDetailModal.renderDetailRestaurant({
         name,
         category,
         distance,
@@ -26,11 +42,17 @@ class RestaurantBox extends HTMLElement {
     });
   }
 
-  render({ name, category, distance, description = '', isFavorite = '' }) {
+  render({
+    name,
+    category,
+    distance,
+    description = '',
+    isFavorite,
+  }: Restaurant) {
     const NAME_SLICE_NUMBER = 14;
     const DESCRIPTION_SLICE_NUMBER = 30;
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <li >
       <category-image category=${category}></category-image>
       <div class="info">
@@ -120,10 +142,10 @@ class RestaurantBox extends HTMLElement {
       }
 `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 
-  update(restaurant) {
+  update(restaurant: Restaurant) {
     this.attachShadow({ mode: 'open' });
     this.setAttribute('id', restaurant.name);
     this.render(restaurant);

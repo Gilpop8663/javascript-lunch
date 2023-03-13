@@ -1,6 +1,6 @@
 import TextInput from './TextInput';
 
-class LinkInput extends TextInput {
+class DescriptionInput extends TextInput {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
     this.render();
@@ -13,14 +13,14 @@ class LinkInput extends TextInput {
     const name = this.getAttribute('name');
     const caption = this.getAttribute('caption');
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="container">
       <label for="${id}" class="text-caption">${name}</label>
-      <input type="text" name="${id}" id="${id}">
+      <textarea name="${id}" id="${id}" cols="30" rows="5"></textarea>
       <span class="help-text text-caption">${caption}</span>
       <div id="lengthContainer" class="length-info">
         <span id="length">0</span>
-        <span>/100</span>
+        <span>/1000</span>
       </div>
     </div>`;
   }
@@ -38,9 +38,9 @@ class LinkInput extends TextInput {
     return false;
   }
 
-  getErrorMessage(textValue) {
-    if (textValue.length > 100) {
-      return '링크 값은 100자 이하로만 가능합니다.';
+  getErrorMessage(textValue: string) {
+    if (textValue.length > 1000) {
+      return '설명 값은 1000자 이하로만 가능합니다.';
     }
     return null;
   }
@@ -48,13 +48,15 @@ class LinkInput extends TextInput {
   setErrorRemoveEvent() {
     const id = this.getAttribute('id');
 
-    this.shadowRoot.querySelector(`#${id}`).addEventListener('input', () => {
+    this.shadowRoot!.querySelector(`#${id}`)?.addEventListener('input', () => {
       const textValue = this.getTextValue();
       const nameError = this.getErrorMessage(textValue);
 
-      this.shadowRoot.querySelector(
+      const textLength = this.shadowRoot!.querySelector(
         '#length'
-      ).innerText = `${textValue.length}`;
+      ) as HTMLSpanElement;
+
+      textLength.innerText = `${textValue.length}`;
 
       this.setLengthError(textValue);
 
@@ -64,18 +66,18 @@ class LinkInput extends TextInput {
     });
   }
 
-  setLengthError(textValue) {
-    if (textValue.length > 100) {
-      this.shadowRoot
-        .querySelector('#lengthContainer')
-        .classList.add('length-error');
+  setLengthError(textValue: string) {
+    if (textValue.length > 1000) {
+      this.shadowRoot!.querySelector('#lengthContainer')?.classList.add(
+        'length-error'
+      );
       return;
     }
 
-    this.shadowRoot
-      .querySelector('#lengthContainer')
-      .classList.remove('length-error');
+    this.shadowRoot!.querySelector('#lengthContainer')?.classList.remove(
+      'length-error'
+    );
   }
 }
 
-export default LinkInput;
+export default DescriptionInput;

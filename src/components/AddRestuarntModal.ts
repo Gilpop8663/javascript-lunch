@@ -1,15 +1,15 @@
 import Modal from './Modal';
 
 class AddRestaurantModal extends Modal {
-  connectedCallback() {
+  override connectedCallback() {
     this.attachShadow({ mode: 'open' });
     this.render();
-    this.setComponentStyle(2);
+    this.setComponentStyle({ zIndex: 2 });
     this.closeModalEvent();
   }
 
-  render() {
-    this.shadowRoot.innerHTML = `
+  override render() {
+    this.shadowRoot!.innerHTML = `
     <div id="modal" class="modal" alt="modal">
         <div id="modalBackdrop" class="backdrop"></div>
        <add-restaurant-form></add-restaurant-form>

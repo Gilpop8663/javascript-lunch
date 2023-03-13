@@ -1,5 +1,6 @@
-import logo from '../assets/add-button.png';
 import { $ } from '../utils';
+import logo from '../assets/add-button.png';
+import AddRestaurantModal from './AddRestuarntModal';
 
 class Header extends HTMLElement {
   connectedCallback() {
@@ -11,22 +12,28 @@ class Header extends HTMLElement {
   }
 
   openModalEvent() {
-    this.shadowRoot
-      .querySelector('#openModal')
-      .addEventListener('click', () => {
-        $('add-restaurant-modal').openModal();
-      });
+    const openModal = this.shadowRoot!.querySelector(
+      '#openModal'
+    ) as AddRestaurantModal;
+
+    openModal.addEventListener('click', () => {
+      const addRestaurantModal = $(
+        'add-restaurant-modal'
+      ) as AddRestaurantModal;
+
+      addRestaurantModal.openModal();
+    });
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <header id="head" >
       <h1 id="title" class="text-title">점심 뭐 먹지</h1>
       <button type="button" id="openModal" aria-label="음식점 추가">
         <img src=${logo} alt="음식점 추가" />
       </button>
     </header>
-  `;
+    `;
   }
 
   setComponentStyle() {
@@ -70,11 +77,13 @@ class Header extends HTMLElement {
     }
   `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 
   titleClickEvent() {
-    this.shadowRoot.querySelector('#title').addEventListener('click', () => {
+    const title = this.shadowRoot!.querySelector('#title') as HTMLElement;
+
+    title.addEventListener('click', () => {
       window.scrollTo(0, 0);
     });
   }

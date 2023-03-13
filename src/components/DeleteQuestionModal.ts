@@ -1,10 +1,11 @@
+import DeleteQustion from './DeleteQustion';
 import Modal from './Modal';
 
 class DeleteQustionModal extends Modal {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
     this.render();
-    this.setComponentStyle(3);
+    this.setComponentStyle({ zIndex: 3 });
     this.modalEvent();
   }
 
@@ -13,7 +14,7 @@ class DeleteQustionModal extends Modal {
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div id="modal" class="modal" alt="modal">
         <div id="modalBackdrop" class="backdrop"></div>
         <delete-question></delete-question>
@@ -22,11 +23,12 @@ class DeleteQustionModal extends Modal {
   }
 
   modalEvent() {
-    this.shadowRoot
-      .querySelector('#modalBackdrop')
-      .addEventListener('click', () => {
+    this.shadowRoot!.querySelector('#modalBackdrop')?.addEventListener(
+      'click',
+      () => {
         this.closeModal();
-      });
+      }
+    );
 
     document.addEventListener('keydown', (event) => {
       if (event.code === 'Escape') {
@@ -35,8 +37,12 @@ class DeleteQustionModal extends Modal {
     });
   }
 
-  setDeleteName(name) {
-    this.shadowRoot.querySelector('delete-question').setDeleteName(name);
+  setDelete(name: string) {
+    const deleteQuestion = this.shadowRoot!.querySelector(
+      'delete-question'
+    ) as DeleteQustion;
+
+    deleteQuestion.setDeleteName(name);
   }
 }
 

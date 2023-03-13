@@ -15,7 +15,7 @@ class FavoriteImage extends HTMLElement {
   render() {
     const isFavorite = this.getAttribute('isFavorite');
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <img src="${isFavorite === 'true' ? filled : lined}" alt="isFavorite">
     `;
   }
@@ -37,7 +37,7 @@ class FavoriteImage extends HTMLElement {
         }
     `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

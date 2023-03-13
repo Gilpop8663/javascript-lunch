@@ -1,6 +1,6 @@
-const $ = (selector) => document.querySelector(selector);
+const $ = (selector: string) => document.querySelector(selector);
 
-const shortenString = (word, range) => {
+const shortenString = (word: string, range: number) => {
   if (word.length > range) {
     return `${word.slice(0, range)}···`;
   }

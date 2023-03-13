@@ -6,17 +6,17 @@ class RestaurantTab extends HTMLElement {
   }
 
   select() {
-    this.shadowRoot.querySelector('div').classList.remove('not-select');
+    this.shadowRoot!.querySelector('div')?.classList.remove('not-select');
   }
 
   notSelect() {
-    this.shadowRoot.querySelector('div').classList.add('not-select');
+    this.shadowRoot!.querySelector('div')?.classList.add('not-select');
   }
 
   isSelect() {
-    return !this.shadowRoot
-      .querySelector('div')
-      .classList.contains('not-select');
+    return !this.shadowRoot!.querySelector('div')?.classList.contains(
+      'not-select'
+    );
   }
 
   static get observedAttributes() {
@@ -26,7 +26,7 @@ class RestaurantTab extends HTMLElement {
   render() {
     const name = this.getAttribute('name');
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
     <div class="select">${name}</div>
     `;
   }
@@ -59,7 +59,7 @@ class RestaurantTab extends HTMLElement {
       }
     `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 

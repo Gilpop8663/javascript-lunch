@@ -1,5 +1,11 @@
-import RestaurantList from '../domain/RestaurantList.ts';
+import RestaurantList, {
+  CategoryAll,
+  Restaurant,
+} from '../domain/RestaurantList';
 import { $ } from '../utils';
+import FilterBox from './FilterBox';
+import RestaurantBox from './RestaurantBox';
+import RestaurantTab from './RestaurantTab';
 
 class RestaurantBoxes extends HTMLElement {
   connectedCallback() {
@@ -9,8 +15,12 @@ class RestaurantBoxes extends HTMLElement {
   }
 
   drawRestaurants() {
-    const categoryValue = $('#categoryFilter').getSelectValue();
-    const sortingValue = $('#sortingFilter').getSelectValue();
+    const categoryFilter = $('#categoryFilter') as FilterBox;
+    const sortingFilter = $('#sortingFilter') as FilterBox;
+    const favoriteTab = $('#favoriteTab') as RestaurantTab;
+
+    const categoryValue = categoryFilter.getSelectValue() as CategoryAll;
+    const sortingValue = sortingFilter.getSelectValue();
 
     const englishSortingValue = sortingValue === '이름순' ? 'name' : 'distance';
 
@@ -19,7 +29,7 @@ class RestaurantBoxes extends HTMLElement {
       englishSortingValue
     );
 
-    if ($('#favoriteTab').isSelect()) {
+    if (favoriteTab.isSelect()) {
       const favoriteRestaurant = filteredList.filter(
         (restaurant) => restaurant.isFavorite === true
       );
@@ -30,32 +40,38 @@ class RestaurantBoxes extends HTMLElement {
     this.restaurantListRender(filteredList);
   }
 
-  getRestaurant(restaurant) {
-    const restaurantBox = document.createElement('restaurant-box');
+  getRestaurant(restaurant: Restaurant) {
+    const restaurantBox = document.createElement(
+      'restaurant-box'
+    ) as RestaurantBox;
     restaurantBox.update(restaurant);
 
     return restaurantBox;
   }
 
-  restaurantListRender(restaurants) {
-    this.shadowRoot.querySelector('#restaurantList').innerHTML = '';
+  restaurantListRender(restaurants: Restaurant[]) {
+    const list = this.shadowRoot!.querySelector(
+      '#restaurantList'
+    ) as HTMLUListElement;
+
+    list.innerHTML = '';
 
     if (restaurants.length === 0) {
-      this.shadowRoot.querySelector('#restaurantList').innerHTML =
-        '<div class="empty">음식점 목록이 비었습니다</div>';
+      list.innerHTML = '<div class="empty">음식점 목록이 비었습니다</div>';
       return;
     }
 
-    restaurants.forEach((restaurant) => {
+    restaurants.forEach((restaurant: Restaurant) => {
       const restaurantTemplate = this.getRestaurant(restaurant);
-      this.shadowRoot
-        .querySelector('#restaurantList')
-        .insertAdjacentElement('beforeend', restaurantTemplate);
+      this.shadowRoot!.querySelector('#restaurantList')?.insertAdjacentElement(
+        'beforeend',
+        restaurantTemplate
+      );
     });
   }
 
   render() {
-    this.shadowRoot.innerHTML = '<ul id="restaurantList"></ul>';
+    this.shadowRoot!.innerHTML = '<ul id="restaurantList"></ul>';
   }
 
   setComponentStyle() {
@@ -82,7 +98,7 @@ class RestaurantBoxes extends HTMLElement {
       
         `;
 
-    this.shadowRoot.append(componentStyle);
+    this.shadowRoot!.append(componentStyle);
   }
 }
 
